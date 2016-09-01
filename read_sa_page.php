@@ -31,12 +31,14 @@ function testParse() {
 	assert($dataPoints['advisoryId'] == 'DRUPAL-SA-CONTRIB-2016-007', 'Advisory ID');
 	assert($dataPoints['version'][0] == '7.x', 'Version - first');
 	assert($dataPoints['version'][1] == '8.x', 'Version - second');
+	assert($dataPoints['risk'] == 'Moderately critical', 'Risk')
 
-	return true;
+	return $dataPoints;
 }
 
-if (testParse()) {
+if ($data = testParse()) {
 	print "Hooray!\n";
+	var_dump($data);
 }
 else {
 	print "Boo\n";

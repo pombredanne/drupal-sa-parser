@@ -6,7 +6,8 @@ class ParserChain {
   public function __construct() {
     $this->dataPointParsers = array(
       new ParseAdvisoryId(),
-      new ParseVersion()
+      new ParseVersion(),
+      new ParseRisk(),
     );
   }
 
@@ -72,5 +73,34 @@ class ParseVersion extends DataPointParser {
     else {
       return null;
     }
+  }
+}
+
+class ParseRisk extends DataPointParser {
+
+  private $levels = array (
+    'Highly critical',
+    'Moderately critical',
+    'Critical',
+    'Less critical',
+    'Not critical',
+  );
+
+  public function __construct() { parent::__construct('risk'); }
+
+  public function getDataPoint($text) {
+    $matches = array();
+    if (!preg_match('~^Security risk: [^\(]*\(([^\)]*)\).*$~', $text, $matches)) {
+      return null;
+    }
+
+    $payload = $matches[1];
+    foreach ($this->levels as $level) {
+      if (stripos($payload, $level) !== false) {
+        return $level;
+      }
+    }
+
+    return null;
   }
 }
