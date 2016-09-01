@@ -6,6 +6,7 @@ class ParserChain {
   public function __construct() {
     $this->dataPointParsers = array(
       new ParseAdvisoryId(),
+      new ParseVersion(),
     );
   }
 
@@ -49,3 +50,27 @@ class ParseAdvisoryId extends DataPointParser {
   }
 }
 
+class ParseVersion extends DataPointParser {
+  public function __construct() { parent::__construct('version'); }
+
+  public function getDataPoint($text) {
+    $matches = array();
+    if (preg_match('~^Version: (.*)$~', $text, $matches)) {
+      $csvVersions = $matches[1];
+
+      if ($csvVersions) {
+        $versions = explode(',', $csvVersions);
+      }
+
+      if (!is_array($versions)) {
+        return null;
+      }
+
+      $versions = array_filter(array_map('trim', $versions));
+      return $versions;
+    }
+    else {
+      return null;
+    }
+  }
+}
