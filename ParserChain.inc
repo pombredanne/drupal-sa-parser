@@ -8,6 +8,7 @@ class ParserChain {
       new ParseAdvisoryId(),
       new ParseVersion(),
       new ParseRisk(),
+      new ParseDate(),
     );
   }
 
@@ -102,5 +103,43 @@ class ParseRisk extends DataPointParser {
     }
 
     return null;
+  }
+}
+
+class ParseDate extends DataPointParser {
+  public function __construct() { parent::__construct('date'); }
+
+  private $replacements = array(
+    'January' => 'Jan',
+    'February' => 'Feb',
+    'March' => 'Mar',
+    'April' => 'Apr',
+    'May' => 'May',
+    'June' => 'Jun',
+    'July' => 'Jul',
+    'August' => 'Aug',
+    'September' => 'Sep',
+    'October' => 'Oct',
+    'November' => 'Nov',
+    'December' => 'Dec',
+  );
+
+  public function getDataPoint($text) {
+    $matches = array();
+    if (!preg_match('~^Date: (.*)$~', $text, $matches)) {
+      return null;
+    }
+
+    $dateToParse = $matches[1];
+    $dateToParse =
+      str_replace(array_keys($this->replacements), array_values($this->replacements), $dateToParse);
+
+    $date = date_parse($dateToParse);
+
+    return array(
+      'year' => $date['year'],
+      'month' => $date['month'],
+      'day' => $date['day'],
+    );
   }
 }
