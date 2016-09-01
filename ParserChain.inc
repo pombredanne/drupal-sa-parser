@@ -6,7 +6,7 @@ class ParserChain {
   public function __construct() {
     $this->dataPointParsers = array(
       new ParseAdvisoryId(),
-      new ParseVersion(),
+      new ParseVersion()
     );
   }
 
