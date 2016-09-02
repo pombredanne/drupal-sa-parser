@@ -9,14 +9,18 @@ function parseSecurityAdvisory($url) {
 	$dom = new SelectorDom($source);
 	$chain = new ParserChain();
 
-	$bullets = $dom->select('.content ul:first-child li');
+	$bullets = $dom->select('.content ul:first-child li', false);
+	$rawData = array();
+
+	for ($i = 0; $i < $bullets->length; $i++) {
+		$item = $bullets->item($i);
+		$rawData[] = DOMinnerHTML($item);
+	}
+
 	$dataPoints = array();
 
-
-
-	foreach ($bullets as $bullet) {
-	  $data = $bullet['text'];
-	  list($key, $value) = $chain->parseBulletText($data);
+	foreach ($rawData as $innerHtml) {
+	  list($key, $value) = $chain->parseBulletText($innerHtml);
 	  if ($key) {
 	    $dataPoints[$key] = $value;
 	  }
@@ -35,6 +39,8 @@ function testParse() {
 	assert($dataPoints['date']['year'] == 2016, 'Date year');
 	assert($dataPoints['date']['month'] == 2, 'Date month');
 	assert($dataPoints['date']['day'] == 17, 'Date day');
+	assert($dataPoints['project']['id'] == 'nodejs', 'Project id');
+	assert($dataPoints['project']['name'] == 'Node.js integration', 'Project name');
 
 	return $dataPoints;
 }
@@ -45,4 +51,16 @@ if ($data = testParse()) {
 }
 else {
 	print "Boo\n";
+}
+
+// see http://stackoverflow.com/a/2087136 
+function DOMinnerHTML(DOMNode $element) { 
+    $innerHTML = ""; 
+    $children  = $element->childNodes;
+
+    foreach ($children as $child) { 
+        $innerHTML .= $element->ownerDocument->saveHTML($child);
+    }
+
+    return $innerHTML; 
 }

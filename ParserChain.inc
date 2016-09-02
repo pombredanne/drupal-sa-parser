@@ -9,6 +9,7 @@ class ParserChain {
       new ParseVersion(),
       new ParseRisk(),
       new ParseDate(),
+      new ParseProject(),
     );
   }
 
@@ -140,6 +141,26 @@ class ParseDate extends DataPointParser {
       'year' => $date['year'],
       'month' => $date['month'],
       'day' => $date['day'],
+    );
+  }
+}
+
+
+class ParseProject extends DataPointParser {
+  public function __construct() { parent::__construct('project'); }
+
+  public function getDataPoint($text) {
+    $matches = array();
+    if (!preg_match('~<a[^>]*drupal.org/project/([a-zA-Z0-9_\-]+)[^>]*>([^<]*)</a>~', $text, $matches)) {
+      return null;
+    }
+
+    $projectId = $matches[1];
+    $projectName = $matches[2];
+
+    return array(
+      'id' => $projectId,
+      'name' => $projectName,
     );
   }
 }
