@@ -1,7 +1,7 @@
 <?php
 
-include('selector.inc');
-include('ParserChain.inc');
+include_once('selector.inc');
+include_once('ParserChain.inc');
 
 class DrupalSAPageReader {
 	private $url;
@@ -51,7 +51,6 @@ class DrupalSAPageReader {
 function testDrupalSAPageReader() {
 	$reader = new DrupalSAPageReader('https://www.drupal.org/node/2670636');
 	$dataPoints = $reader->parse();
-	var_dump($dataPoints);
 
 	assert($dataPoints['advisoryId'] == 'DRUPAL-SA-CONTRIB-2016-007', 'Advisory ID');
 	assert($dataPoints['version'][0] == '7.x', 'Version - first');
@@ -64,4 +63,3 @@ function testDrupalSAPageReader() {
 	assert($dataPoints['project']['name'] == 'Node.js integration', 'Project name');
 }
 
-testDrupalSAPageReader();
